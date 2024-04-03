@@ -53,12 +53,35 @@ In order to get the coils spaced to the simulation value, I used small hole punc
 
 The coil set sits on a small mgn9 linear bearing carriage and rail, I machined some small brackets from acrylic sheet, this held the magnet tube in place and secured the coils over the whole length of travel. There is plenty of room for improvement in the brackets, but for a prototype this wasn't the priority. The linear encoder head was attached to the moving carriage and the encoder strip was attached to the magnet tube end brackets, one end was a M3 countersunk screw and the other end was a wire flexure that kept the strip tight. Cable strain relief was a problem which needed to be paid attention to, mostly due to the sensitive pin terminations on the encoder; this was fixed later with an encoder breakout board (see picture).
 
-## Motor driver - setup and first run (SimpleFOC)
+# Motor driver - Setup and First Run (SimpleFOC)
 
-A Lot of this project was centered around the possibility of getting the SimpleFOC Arduino library working with a linear motor, given the limited information this was tricky to navigate initially. Hopefully this helps with other people trying to get up and running.
+A Lot of this project was centered around the possibility of getting the SimpleFOC Arduino library working with a linear motor, given the limited information this was tricky to navigate initially. Hopefully this helps with other people trying to get up and running. (There is some assumed knowledge that I won't touch on, with the SFOC website and forums being very helpful).
 
-### First steps - 
 Once you've got the SFOC library installed as well as the STM32 offical library from STMicro (very important), you are ready to do some pre-checks and calibration.
-# Encoder Check
-Under the SFOC example list, utilities, sensor test, and select your appropiate encoder, in this case just standed AB encoder. This checks the pinout for your encoder. Once you get a 
+### Encoder Check (Don't SKIP)
+Under the SFOC example list, utilities, sensor test, and select your appropiate encoder, in this case just standed AB encoder. This checks the pinout for your encoder (and you can ignore the CPR number for now, just leave as default). Once you get a decent position and velocity curve like demonstrated here moving by hand (https://youtu.be/7zi0S_LTSNg) you can continue to pole pair.
+### Pole Pair Calibration
+Under the SFOC example list, utilities, calibratrion, find pole pairs, encoder, launch the find pole pairs number test code (FPPN). Here we're trying to find a specific number for the encoder CPR that gives us a round number when running the FPPN code. Starting with (1) in the BLDCMotor line, add in your 3PWM driver phase and enable pinouts, as well as your encoder pinouts your verified above. With a best guess CPR number put into last variable of the encoder settings. Run this code and wait for it to complete. What the script is doing is checking running the coils in open loop angle mode and counting the number of encoder pulses (encoder angle), what we want is for the numbers calculated to be a nice round number!
+
+For example (using a reduced pp_search_angle = 3*PI as my motor is too short)
+
+PP = Electrical angle / Encoder angle 
+
+Encoder CPR = 1110, PP = 540.00/-272.27=-1.98, Close but the encoder angle isn't a round number.
+
+Encoder CPR = 1130, PP = 540.00/-267.53=-2.02, Close but the encoder angle still isn't a round number.
+
+Encoder CPR = 1120, PP = 540.00/-270.00=-2.00, Perfect encoder angle.
+
+So for the final code, the BLDCMotor and encoder line will look like this:
+
+BLDCMotor motor = BLDCMotor(2);
+
+Encoder encoder = Encoder(PC8, PC6, 1120); //Pinout may vary.
+
+### Adding the rest
+After that is complete the rest is plug and play with standard SFOC library. Start out with voltage based, torque closed loop, ideally using commander and SFOC Studio to monitor and tune the motor. Then move to voltage base angle control. Then lastly FOC_Current angle control, there was a trick with the inline current sense that I found which required the third term to need the _NC, rather than just leaving it default.
+
+### Klipper Interface
+In order to use this motor driver with an exteral controller I'm using the step/dir listener provided by the SFOC community, this works great as long as you can keep the electrical noise low and speeds at a reasonable limit (more testing needed!). https://youtu.be/fjbZ5hjDKrU
 
