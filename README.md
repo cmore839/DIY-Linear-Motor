@@ -53,6 +53,8 @@ In order to get the coils spaced to the simulation value, I used small hole punc
 
 The coil set sits on a small mgn9 linear bearing carriage and rail, I machined some small brackets from acrylic sheet, this held the magnet tube in place and secured the coils over the whole length of travel. There is plenty of room for improvement in the brackets, but for a prototype this wasn't the priority. The linear encoder head was attached to the moving carriage and the encoder strip was attached to the magnet tube end brackets, one end was a M3 countersunk screw and the other end was a wire flexure that kept the strip tight. Cable strain relief was a problem which needed to be paid attention to, mostly due to the sensitive pin terminations on the encoder; this was fixed later with an encoder breakout board (see picture).
 
+NOTE: I found out the hard way that even stainless steel bolts are affected by the permanent magnets too strongly and cause issues. Where possible any screws that are on the moving carriage need to be either plastic or aluminium screws.
+
 # Motor driver - Setup and First Run (SimpleFOC)
 
 A Lot of this project was centered around the possibility of getting the SimpleFOC Arduino library working with a linear motor, given the limited information this was tricky to navigate initially. Hopefully this helps with other people trying to get up and running. (There is some assumed knowledge that I won't touch on, with the SFOC website and forums being very helpful).
