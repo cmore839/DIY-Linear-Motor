@@ -1,0 +1,86 @@
+#include <SimpleFOC.h>
+BLDCMotor motor = BLDCMotor(2); //Probably leave as 2 for every linear motor combo
+BLDCDriver3PWM driver = BLDCDriver3PWM(PB6, PB4, PB10, PA9);
+Encoder encoder = Encoder(PC8, PC6, 1120); //1120 was found via trial and error.
+void doA(){encoder.handleA();}
+void doB(){encoder.handleB();}
+// angle set point variable
+float received_angle = 0;
+// instantiate the commander
+Commander command = Commander(Serial);
+void onMotor(char* cmd){ command.motor(&motor,cmd); }
+InlineCurrentSense current_sense  = InlineCurrentSense(0.01, 50, A0, A2, _NC);
+StepDirListener step_dir = StepDirListener(PA15, PC12, 0.0014); // Comment out if want to use commander
+void onStep() { step_dir.handle(); } // Comment out if want to use commander
+
+void setup() {
+  command.add('M',onMotor,"LinMot");
+  
+  // setting the limits
+  motor.velocity_limit = 99999;
+  motor.voltage_limit = 24;
+  motor.current_limit = 9999999;
+
+  encoder.quadrature = Quadrature::ON;
+  encoder.init();
+  encoder.enableInterrupts(doA, doB);
+  motor.linkSensor(&encoder);
+
+  // driver config
+  driver.pwm_frequency = 25000;
+  driver.voltage_power_supply = 24;
+  
+  driver.init();
+  current_sense.linkDriver(&driver);
+  motor.linkDriver(&driver);
+    // initialize motor
+  motor.init();
+  // init current sense
+  current_sense.init();
+  motor.linkCurrentSense(&current_sense);
+  
+  motor.voltage_sensor_align = 3;
+  motor.velocity_index_search = 3;
+  motor.foc_modulation = FOCModulationType::SpaceVectorPWM;
+  motor.controller = MotionControlType::angle;
+  motor.torque_controller = TorqueControlType::foc_current;
+
+  // velocity PID controller parameters
+  motor.PID_velocity.P = 0.6;
+  motor.PID_velocity.I = 0;
+  motor.PID_velocity.D = 0;
+  motor.PID_velocity.output_ramp = 0;
+  motor.LPF_velocity.Tf = 0.001;
+   
+  // angle PID controller 
+  motor.P_angle.P = 100; //200
+  motor.P_angle.I = 0; //0.4
+  motor.P_angle.D = 0; //2.0
+  motor.P_angle.output_ramp = 0;
+  motor.LPF_angle.Tf = 0;
+
+  // foc current control parameters
+  motor.PID_current_q.P = 1;
+  motor.PID_current_q.I= 0.1;
+  motor.PID_current_d.P= 1;
+  motor.PID_current_d.I = 0.1;
+  motor.LPF_current_q.Tf = 0.01; 
+  motor.LPF_current_d.Tf = 0.01; 
+
+  motor.motion_downsample = 0;
+  motor.useMonitoring(Serial);
+  Serial.begin(115200);
+
+  motor.initFOC();
+  step_dir.init();// Comment out if want to use commander
+  step_dir.enableInterrupt(onStep);// Comment out if want to use commander
+  step_dir.attach(&received_angle);// Comment out if want to use commander
+  //delay(10000);
+}
+
+void loop() {
+  motor.loopFOC();
+  motor.move(received_angle);
+  motor.monitor();
+  command.run();
+}
