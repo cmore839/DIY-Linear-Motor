@@ -58,3 +58,7 @@ The coil set sits on a small mgn9 linear bearing carriage and rail, I machined s
 A Lot of this project was centered around the possibility of getting the SimpleFOC Arduino library working with a linear motor, given the limited information this was tricky to navigate initially. Hopefully this helps with other people trying to get up and running.
 
 ### First steps - 
+Once you've got the SFOC library installed as well as the STM32 offical library from STMicro (very important), you are ready to do some pre-checks and calibration.
+# Encoder Check
+Under the SFOC example list, utilities, sensor test, and select your appropiate encoder, in this case just standed AB encoder. This checks the pinout for your encoder. Once you get a 
+
