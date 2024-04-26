@@ -5,6 +5,8 @@ https://www.youtube.com/watch?v=wEBWoIjgftI
 
 This is an attempt to make a high performance and low cost linear motor for the diy hobby user. This can be adapted to any use case as needed, 3D printer, pick and place etc. See here for background on operating principle.
 
+Performance: A 6 coil forcer was able generate peak of 16N of force. This can't be sustained for long as the coils would eventually melt.
+
 https://en.wikipedia.org/wiki/Linear_motor
 
 ## Research and Sim (coil and magnet) + Market Options
