@@ -1,5 +1,6 @@
 # DIY-Linear-Motor
 Official Discord (https://discord.gg/MjB4ArvR)
+
 https://www.youtube.com/watch?v=wEBWoIjgftI
 
 This is an attempt to make a high performance and low cost linear motor for the diy hobby user. This can be adapted to any use case as needed, 3D printer, pick and place etc. See here for background on operating principle.
