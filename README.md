@@ -1,5 +1,5 @@
 # DIY-Linear-Motor
-Official Discord (https://discord.gg/MjB4ArvR)
+Official Discord (https://discord.com/invite/5FmVrjaZHb)
 
 https://www.youtube.com/watch?v=wEBWoIjgftI
 
